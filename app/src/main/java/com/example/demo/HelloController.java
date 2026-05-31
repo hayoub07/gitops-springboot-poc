@@ -12,8 +12,8 @@ public class HelloController {
     @GetMapping("/")
     public Map<String, String> home() {
         return Map.of(
-                "message", "Hello Ayoub, this is a Spring Boot GitOps POC",
-                "version", "v1",
+                "message", "Hello Ayoub, GitOps upadted to v2",
+                "version", "v2",
                 "time", Instant.now().toString()
         );
     }
