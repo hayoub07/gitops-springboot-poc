@@ -9,7 +9,8 @@ spec:
     # For real GitOps, replace this by your Git repo URL.
     # Example: https://github.com/your-user/gitops-springboot-poc.git
     #repoURL: https://github.com/CHANGE_ME/gitops-springboot-poc.git
-    repoURL: git@github.com:hayoub07/gitops-springboot-poc.git
+    repoURL: https://github.com/hayoub07/gitops-springboot-poc.git
+    #repoURL: git@github.com:hayoub07/gitops-springboot-poc.git
     targetRevision: HEAD
     path: gitops/dev
   destination:
