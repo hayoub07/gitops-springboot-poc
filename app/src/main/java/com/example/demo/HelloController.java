@@ -12,8 +12,8 @@ public class HelloController {
     @GetMapping("/")
     public Map<String, String> home() {
         return Map.of(
-                "message", "Hello Ayoub, GitOps upadted to v3",
-                "version", "v3",
+                "message", "Hello Ayoub, GitOps upadted to v4",
+                "version", "v4",
                 "time", Instant.now().toString()
         );
     }
