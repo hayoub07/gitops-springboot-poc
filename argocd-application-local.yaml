@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitops-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # For real GitOps, replace this by your Git repo URL.
+    # Example: https://github.com/your-user/gitops-springboot-poc.git
+    repoURL: https://github.com/CHANGE_ME/gitops-springboot-poc.git
+    targetRevision: HEAD
+    path: gitops/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
