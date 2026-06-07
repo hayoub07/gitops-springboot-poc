@@ -1,0 +1,98 @@
+name: CI GitOps Spring Boot
+
+# Trigger: pipeline lancé uniquement sur push vers main
+on:
+  push:
+    branches:
+      - main
+
+# Permissions nécessaires :
+# contents: write  -> commit automatique du manifest GitOps
+# packages: write  -> push image vers GHCR
+# security-events  -> utile pour les rapports sécurité
+permissions:
+  contents: write
+  packages: write
+  security-events: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: hayoub07/gitops-demo
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupérer le code source
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. Installer Java 21 + cache Maven
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      # 3. Compiler + lancer les tests unitaires
+      - name: Run tests and build
+        working-directory: app
+        run: mvn clean verify
+
+      # 4. Analyse qualité SonarCloud
+      # Nécessite un secret GitHub : SONAR_TOKEN
+      - name: SonarCloud analysis
+        working-directory: app
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=hayoub07_gitops-springboot-poc \
+            -Dsonar.organization=hayoub07 \
+            -Dsonar.host.url=https://sonarcloud.io
+
+      # 5. Construire l'image Docker avec le SHA du commit
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::7}
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ./app
+
+      # 6. Scanner l'image Docker avec Trivy
+      # Le pipeline échoue si vulnérabilité HIGH ou CRITICAL
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: ghcr.io/hayoub07/gitops-demo:${{ env.IMAGE_TAG }}
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      # 7. Connexion à GitHub Container Registry
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      # 8. Push de l'image Docker vers GHCR
+      - name: Push Docker image
+        run: docker push $REGISTRY/$IMAGE_NAME:${{ env.IMAGE_TAG }}
+
+      # 9. Mise à jour du manifest GitOps
+      # ArgoCD surveille ce fichier
+      - name: Update GitOps manifest
+        run: |
+          sed -i "s|image: .*|image: $REGISTRY/$IMAGE_NAME:${IMAGE_TAG}|g" gitops/dev/deployment.yaml
+          sed -i "s|imagePullPolicy: .*|imagePullPolicy: IfNotPresent|g" gitops/dev/deployment.yaml
+
+      # 10. Commit automatique du changement GitOps
+      # Ce commit déclenche ArgoCD
+      - name: Commit GitOps change
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add gitops/dev/deployment.yaml
+          git diff --cached --quiet || git commit -m "deploy ${IMAGE_TAG}"
+          git push
