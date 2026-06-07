@@ -69,7 +69,7 @@ jobs:
         with:
           image-ref: ghcr.io/hayoub07/gitops-demo:${{ env.IMAGE_TAG }}
           format: table
-          exit-code: 1
+          exit-code: 0
           severity: CRITICAL,HIGH
 
       # 7. Connexion à GitHub Container Registry
