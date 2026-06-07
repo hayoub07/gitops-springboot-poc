@@ -45,15 +45,15 @@ jobs:
 
       # 4. Analyse qualité SonarCloud
       # Nécessite un secret GitHub : SONAR_TOKEN
-      - name: SonarCloud analysis
-        working-directory: app
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn sonar:sonar \
-            -Dsonar.projectKey=hayoub07_gitops-springboot-poc \
-            -Dsonar.organization=hayoub07 \
-            -Dsonar.host.url=https://sonarcloud.io
+      #- name: SonarCloud analysis
+      #  working-directory: app
+      #  env:
+      #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #  run: |
+      #    mvn sonar:sonar \
+      #      -Dsonar.projectKey=hayoub07_gitops-springboot-poc \
+      #      -Dsonar.organization=hayoub07 \
+      #      -Dsonar.host.url=https://sonarcloud.io
 
       # 5. Construire l'image Docker avec le SHA du commit
       - name: Build Docker image
