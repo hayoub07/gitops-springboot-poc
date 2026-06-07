@@ -67,13 +67,11 @@ jobs:
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             IMAGE_TAG="${GITHUB_REF#refs/tags/}"
-        else
-          IMAGE_TAG="${GITHUB_SHA::7}"
-        fi
-
-        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-        docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ./app
-
+          else
+            IMAGE_TAG="${GITHUB_SHA::7}"
+          fi
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG ./app
 
       # 6. Scanner l'image Docker avec Trivy
       # Le pipeline échoue si vulnérabilité HIGH ou CRITICAL
