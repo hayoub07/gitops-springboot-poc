@@ -93,10 +93,6 @@ jobs:
 
       # 9. Mise à jour du manifest GitOps
       # ArgoCD surveille ce fichier
-#      - name: Update GitOps manifest
-#        run: |
-#          sed -i "s|image: .*|image: $REGISTRY/$IMAGE_NAME:${IMAGE_TAG}|g" gitops/dev/deployment.yaml
-#          sed -i "s|imagePullPolicy: .*|imagePullPolicy: IfNotPresent|g" gitops/dev/deployment.yaml
       - name: Update GitOps manifest
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
         run: |
@@ -112,5 +108,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add gitops/dev/deployment.yaml
           git diff --cached --quiet || git commit -m "deploy ${IMAGE_TAG}"
-#          git commit -m "deploy ${IMAGE_TAG}" || echo "No changes to commit"
           git push
