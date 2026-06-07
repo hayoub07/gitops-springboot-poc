@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gitops-demo
-          image: ghcr.io/hayoub07/gitops-demo:768f10c
+          image: ghcr.io/hayoub07/gitops-demo:f24c976
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
