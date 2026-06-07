@@ -12,14 +12,14 @@ public class HelloController {
     @GetMapping("/")
     public Map<String, String> home() {
         return Map.of(
-                "message", "Hello Ayoub, GitOps upadted to v9",
-                "version", "v9",
+                "message", "Hello Ayoub, GitOps upadted to v10",
+                "version", "v10",
                 "time", Instant.now().toString()
         );
     }
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello GitOps from Spring Boot v9";
+        return "Hello GitOps from Spring Boot v10";
     }
 }
