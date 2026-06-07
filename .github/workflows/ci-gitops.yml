@@ -109,4 +109,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add gitops/dev/deployment.yaml
           git diff --cached --quiet || git commit -m "deploy ${IMAGE_TAG}"
-          git push
+          git push origin HEAD:main
